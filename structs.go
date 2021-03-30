@@ -1,0 +1,13 @@
+package main
+
+type Ingredient struct {
+	Id   string `db:"id" json:"id"`
+	Name string `db:"name" json:"name"`
+	Unit string `db:"unit_name" json:"unit_name"`
+}
+
+type Response struct {
+	Code   string      `json:"code"`
+	Reason string      `json:"reason,omitempty"`
+	Body   interface{} `json:"body,omitempty"`
+}
