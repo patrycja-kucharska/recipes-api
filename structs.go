@@ -2,6 +2,7 @@ package main
 
 type Ingredient struct {
 	Id   string `db:"id" json:"id"`
+	Type string `db:"type" json:"type"`
 	Name string `db:"name" json:"name"`
 	Unit string `db:"unit_name" json:"unit_name"`
 }

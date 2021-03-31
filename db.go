@@ -35,7 +35,7 @@ func addIngredient(ingredient Ingredient) (string, error) {
 func selectIngredient(interf Ingredient) (Ingredient, error) {
 	var ingredient Ingredient
 
-	namedStmt, err := db.PrepareNamed(`SELECT * FROM ingredients WHERE id=:id`)
+	namedStmt, err := db.PrepareNamed(`SELECT *, 'Ingredient' as type FROM ingredients WHERE id=:id`)
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
 		return ingredient, err
@@ -48,7 +48,7 @@ func selectIngredient(interf Ingredient) (Ingredient, error) {
 func listIngredients() ([]Ingredient, error) {
 	var ingredients []Ingredient
 
-	rows, err := db.Queryx(`SELECT * FROM ingredients`)
+	rows, err := db.Queryx(`SELECT * , 'Ingredient' as type FROM ingredients`)
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
 		return ingredients, err
