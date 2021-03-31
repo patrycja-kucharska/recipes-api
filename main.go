@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 
@@ -22,6 +24,7 @@ func handleRequests() {
 	r.HandleFunc("/ingredient", postIngredient).Methods("POST")
 	r.HandleFunc("/ingredient/{id}", getIngredient).Methods("GET")
 	r.HandleFunc("/ingredients", getAllIngredients).Methods("GET")
+	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":8080", loggedRouter))
 }
