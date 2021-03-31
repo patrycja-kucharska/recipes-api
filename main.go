@@ -19,6 +19,7 @@ func handleRequests() {
 	connectToDB()
 	r.HandleFunc("/ingredient", postIngredient).Methods("POST")
 	r.HandleFunc("/ingredient/{id}", getIngredient).Methods("GET")
+	r.HandleFunc("/ingredients", getAllIngredients).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
