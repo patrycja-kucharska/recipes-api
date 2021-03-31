@@ -26,7 +26,16 @@ func getIngredient(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	ing, err := selectIngredient(Ingredient{Id: vars["id"]})
 	if err != nil {
-		createResponse(w, "error", err.Error(), nil, http.StatusNotExtended)
+		createResponse(w, "error", err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
+	createResponse(w, "success", "", ing, http.StatusOK)
+}
+
+func getAllIngredients(w http.ResponseWriter, r *http.Request) {
+	ing, err := listIngredients()
+	if err != nil {
+		createResponse(w, "error", err.Error(), nil, http.StatusInternalServerError)
 		return
 	}
 	createResponse(w, "success", "", ing, http.StatusOK)

@@ -14,16 +14,7 @@ var db *sqlx.DB
 
 func connectToDB() {
 	db = sqlx.MustConnect("postgres", dbConfig)
-
 	// defer db.Close()
-
-	// var ingredients []Ingredient
-	// db.Select(&ingredients, "SELECT * FROM ingredients")
-	// fmt.Println(ingredients)
-
-	// for _, one := range ingredients {
-	// 	fmt.Println(one.Unit)
-	// }
 }
 
 func addIngredient(ingredient Ingredient) (string, error) {
@@ -47,4 +38,22 @@ func selectIngredient(interf Ingredient) (Ingredient, error) {
 	err2 := namedStmt.Get(&ingredient, interf)
 
 	return ingredient, err2
+}
+
+func listIngredients() ([]Ingredient, error) {
+	var ingredients []Ingredient
+
+	rows, err := db.Queryx(`SELECT * FROM ingredients`)
+	if err != nil {
+		log.Fatalf("Unable to execute the query. %v", err)
+		return ingredients, err
+	}
+
+	for rows.Next() {
+		var oneIngredient Ingredient
+		rows.StructScan(&oneIngredient)
+		ingredients = append(ingredients, oneIngredient)
+	}
+
+	return ingredients, nil
 }
