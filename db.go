@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -43,6 +44,30 @@ func selectIngredient(interf Ingredient) (Ingredient, error) {
 	err2 := namedStmt.Get(&ingredient, interf)
 
 	return ingredient, err2
+}
+
+func selectIngredientsWhere(params map[string]string) ([]Ingredient, error) {
+	var ingredients []Ingredient
+
+	var qString []string
+	for key, value := range params {
+		qString = append(qString, fmt.Sprintf(`%s='%s'`, key, value))
+	}
+
+	rows, err := db.Queryx(`SELECT *, 'Ingredient' as type FROM ingredients WHERE ` + strings.Join(qString, " AND "))
+
+	if err != nil {
+		log.Fatalf("Unable to execute the query. %v", err)
+		return ingredients, err
+	}
+
+	for rows.Next() {
+		var oneIngredient Ingredient
+		rows.StructScan(&oneIngredient)
+		ingredients = append(ingredients, oneIngredient)
+	}
+
+	return ingredients, nil
 }
 
 func listIngredients() ([]Ingredient, error) {

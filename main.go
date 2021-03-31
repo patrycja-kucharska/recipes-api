@@ -15,15 +15,18 @@ import (
 
 func main() {
 	godotenv.Load(".env", ".base.env")
-	handleRequests()
+	connectToDB()
+	router()
 }
 
-func handleRequests() {
+func router() {
 	r := mux.NewRouter().StrictSlash(true)
-	connectToDB()
+
 	r.HandleFunc("/ingredient", postIngredient).Methods("POST")
+	r.HandleFunc("/ingredient", findIngredients).Methods("GET").Queries("name", "{name}")
 	r.HandleFunc("/ingredient/{id}", getIngredient).Methods("GET")
 	r.HandleFunc("/ingredients", getAllIngredients).Methods("GET")
+
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 
 	log.Fatal(http.ListenAndServe(":8080", loggedRouter))

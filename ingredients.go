@@ -41,6 +41,18 @@ func getAllIngredients(w http.ResponseWriter, r *http.Request) {
 	createResponse(w, "success", "", ing, http.StatusOK)
 }
 
+func findIngredients(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	ing, err := selectIngredientsWhere(vars)
+	if err != nil {
+		createResponse(w, "error", err.Error(), nil, http.StatusInternalServerError)
+		return
+	}
+
+	createResponse(w, "success", "", ing, http.StatusOK)
+}
+
 func createResponse(w http.ResponseWriter, code, reason string, body interface{}, statusCode int) {
 	resp := Response{}
 	resp.Code = code
