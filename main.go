@@ -5,12 +5,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 
 	// pq is used as a driver (behind the courtains) by sqlx (defined in Connect statement with "postgres" keyword)
 	_ "github.com/lib/pq"
 )
 
 func main() {
+	godotenv.Load(".env", ".base.env")
 	handleRequests()
 }
 
