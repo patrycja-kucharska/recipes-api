@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+  
+	// pq is used as a driver (behind the courtains) by sqlx (defined in Connect statement with "postgres" keyword)
+	_ "github.com/lib/pq"
 
 	"github.com/jmoiron/sqlx"
 )
