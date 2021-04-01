@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"encoding/json"
@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/patrycja-kucharska/recipes-api/database"
+	"github.com/patrycja-kucharska/recipes-api/structs"
 )
 
 func postIngredient(w http.ResponseWriter, r *http.Request) {
 	body, _ := ioutil.ReadAll(r.Body)
-	var newIngredient Ingredient
+	var newIngredient structs.Ingredient
 	json.Unmarshal(body, &newIngredient)
-	id, err := addIngredient(newIngredient)
+	id, err := database.AddIngredient(newIngredient)
 
 	if err != nil {
 		createResponse(w, "error", err.Error(), nil, http.StatusUnprocessableEntity)
@@ -24,7 +26,7 @@ func postIngredient(w http.ResponseWriter, r *http.Request) {
 
 func getIngredient(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	ing, err := selectIngredient(Ingredient{Id: vars["id"]})
+	ing, err := database.SelectIngredient(structs.Ingredient{Id: vars["id"]})
 	if err != nil {
 		createResponse(w, "error", err.Error(), nil, http.StatusInternalServerError)
 		return
@@ -33,7 +35,7 @@ func getIngredient(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAllIngredients(w http.ResponseWriter, r *http.Request) {
-	ing, err := listIngredients()
+	ing, err := database.ListIngredients()
 	if err != nil {
 		createResponse(w, "error", err.Error(), nil, http.StatusInternalServerError)
 		return
@@ -44,7 +46,7 @@ func getAllIngredients(w http.ResponseWriter, r *http.Request) {
 func findIngredients(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	ing, err := selectIngredientsWhere(vars)
+	ing, err := database.SelectIngredientsWhere(vars)
 	if err != nil {
 		createResponse(w, "error", err.Error(), nil, http.StatusInternalServerError)
 		return
@@ -54,7 +56,7 @@ func findIngredients(w http.ResponseWriter, r *http.Request) {
 }
 
 func createResponse(w http.ResponseWriter, code, reason string, body interface{}, statusCode int) {
-	resp := Response{}
+	resp := structs.Response{}
 	resp.Code = code
 	if reason != "" {
 		resp.Reason = reason

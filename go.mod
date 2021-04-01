@@ -1,4 +1,4 @@
-module golang_server
+module github.com/patrycja-kucharska/recipes-api
 
 go 1.15
 
