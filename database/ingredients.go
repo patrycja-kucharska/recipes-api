@@ -1,29 +1,14 @@
-package main
+package database
 
 import (
 	"fmt"
 	"log"
-	"os"
-	"strconv"
 	"strings"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/patrycja-kucharska/recipes-api/structs"
 )
 
-var db *sqlx.DB
-
-func connectToDB() {
-	dbHost := os.Getenv("DB_HOST")
-	dbPort, _ := strconv.Atoi(os.Getenv("DB_PORT"))
-	dbUser := os.Getenv("DB_USER")
-	dbName := os.Getenv("DB_NAME")
-	var dbConfig string = fmt.Sprintf("host=%s port=%d user=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbName)
-	db = sqlx.MustConnect("postgres", dbConfig)
-	// defer db.Close()
-}
-
-func addIngredient(ingredient Ingredient) (string, error) {
+func AddIngredient(ingredient structs.Ingredient) (string, error) {
 	namedStmt, err := db.PrepareNamed(`INSERT INTO ingredients(name, unit_name) VALUES(:name, :unit_name) RETURNING id`)
 	if err != nil {
 		log.Fatalf("Unable to execute the query. %v", err)
@@ -33,8 +18,8 @@ func addIngredient(ingredient Ingredient) (string, error) {
 	return ingredient.Id, nil
 }
 
-func selectIngredient(interf Ingredient) (Ingredient, error) {
-	var ingredient Ingredient
+func SelectIngredient(interf structs.Ingredient) (structs.Ingredient, error) {
+	var ingredient structs.Ingredient
 
 	namedStmt, err := db.PrepareNamed(`SELECT *, 'Ingredient' as type FROM ingredients WHERE id=:id`)
 	if err != nil {
@@ -46,8 +31,8 @@ func selectIngredient(interf Ingredient) (Ingredient, error) {
 	return ingredient, err2
 }
 
-func selectIngredientsWhere(params map[string]string) ([]Ingredient, error) {
-	var ingredients []Ingredient
+func SelectIngredientsWhere(params map[string]string) ([]structs.Ingredient, error) {
+	var ingredients []structs.Ingredient
 
 	var qString []string
 	for key, value := range params {
@@ -62,7 +47,7 @@ func selectIngredientsWhere(params map[string]string) ([]Ingredient, error) {
 	}
 
 	for rows.Next() {
-		var oneIngredient Ingredient
+		var oneIngredient structs.Ingredient
 		rows.StructScan(&oneIngredient)
 		ingredients = append(ingredients, oneIngredient)
 	}
@@ -70,8 +55,8 @@ func selectIngredientsWhere(params map[string]string) ([]Ingredient, error) {
 	return ingredients, nil
 }
 
-func listIngredients() ([]Ingredient, error) {
-	var ingredients []Ingredient
+func ListIngredients() ([]structs.Ingredient, error) {
+	var ingredients []structs.Ingredient
 
 	rows, err := db.Queryx(`SELECT * , 'Ingredient' as type FROM ingredients`)
 	if err != nil {
@@ -80,7 +65,7 @@ func listIngredients() ([]Ingredient, error) {
 	}
 
 	for rows.Next() {
-		var oneIngredient Ingredient
+		var oneIngredient structs.Ingredient
 		rows.StructScan(&oneIngredient)
 		ingredients = append(ingredients, oneIngredient)
 	}
